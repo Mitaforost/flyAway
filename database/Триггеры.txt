@@ -1,0 +1,6 @@
+-- Триггер на оповещение о задержке рейса
+CREATE TRIGGER trigger_flight_status_update
+AFTER UPDATE ON flights
+FOR EACH ROW
+WHEN (OLD.status IS DISTINCT FROM NEW.status)
+EXECUTE FUNCTION notify_delay();

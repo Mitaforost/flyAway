@@ -1,0 +1,53 @@
+-- Добавляем цену к местам
+ALTER TABLE seats
+ADD COLUMN price DECIMAL(10,2) DEFAULT 0.00;
+
+-- Добавляем предпочтительный способ оплаты пользователю
+ALTER TABLE users
+ADD COLUMN default_payment_method_id INT REFERENCES payment_methods(id);
+
+-- Установим разные цены для мест по рейсам
+UPDATE seats SET price = 120.00 WHERE flight_id = 1;
+UPDATE seats SET price = 95.50 WHERE flight_id = 2;
+UPDATE seats SET price = 88.00 WHERE flight_id = 3;
+UPDATE seats SET price = 105.00 WHERE flight_id = 4;
+UPDATE seats SET price = 110.00 WHERE flight_id = 5;
+
+-- Привязать предпочтительный способ оплаты пользователям
+UPDATE users SET default_payment_method_id = 1 WHERE id = 1; -- Банковская карта
+UPDATE users SET default_payment_method_id = 3 WHERE id = 2; -- Google Pay
+UPDATE users SET default_payment_method_id = 2 WHERE id = 3; -- Apple Pay
+UPDATE users SET default_payment_method_id = 4 WHERE id = 4; -- PayPal
+UPDATE users SET default_payment_method_id = 5 WHERE id = 5; -- ЕРИП
+
+-- Рейс 1 (Минск — Москва)
+UPDATE seats SET price = 130.00 WHERE seat_number = '1A'; -- окно
+UPDATE seats SET price = 120.00 WHERE seat_number = '1B'; -- середина
+UPDATE seats SET price = 125.00 WHERE seat_number = '1C'; -- проход
+
+-- Рейс 2 (Минск — Варшава)
+UPDATE seats SET price = 100.00 WHERE seat_number = '2A';
+UPDATE seats SET price = 95.00  WHERE seat_number = '2B';
+UPDATE seats SET price = 98.00  WHERE seat_number = '2C';
+
+-- Рейс 3 (Гродно — Киев)
+UPDATE seats SET price = 90.00  WHERE seat_number = '3A';
+UPDATE seats SET price = 88.00  WHERE seat_number = '3B';
+UPDATE seats SET price = 89.00  WHERE seat_number = '3C';
+
+-- Рейс 4 (Минск — Берлин)
+UPDATE seats SET price = 110.00 WHERE seat_number = '4A';
+UPDATE seats SET price = 105.00 WHERE seat_number = '4B';
+UPDATE seats SET price = 108.00 WHERE seat_number = '4C';
+
+-- Рейс 5 (Брест — Прага)
+UPDATE seats SET price = 115.00 WHERE seat_number = '5A';
+UPDATE seats SET price = 110.00 WHERE seat_number = '5B';
+UPDATE seats SET price = 112.00 WHERE seat_number = '5C';
+
+ALTER TABLE bookings
+DROP CONSTRAINT bookings_booking_status_check;
+
+ALTER TABLE bookings
+ADD CONSTRAINT bookings_booking_status_check
+CHECK (booking_status IN ('active', 'cancelled', 'pending'));

@@ -1,0 +1,70 @@
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    full_name VARCHAR(255),
+    phone VARCHAR(20),
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE flights (
+    id SERIAL PRIMARY KEY,
+    flight_number VARCHAR(20) UNIQUE NOT NULL,
+    departure_airport VARCHAR(100) NOT NULL,
+    arrival_airport VARCHAR(100) NOT NULL,
+    departure_time TIMESTAMP NOT NULL,
+    arrival_time TIMESTAMP NOT NULL,
+    aircraft_model VARCHAR(100),
+    status VARCHAR(50) CHECK (status IN ('scheduled', 'delayed', 'cancelled')) DEFAULT 'scheduled'
+);
+
+CREATE TABLE seats (
+    id SERIAL PRIMARY KEY,
+    flight_id INT REFERENCES flights(id) ON DELETE CASCADE,
+    seat_number VARCHAR(10),
+    is_reserved BOOLEAN DEFAULT FALSE,
+    UNIQUE (flight_id, seat_number)
+);
+
+CREATE TABLE bookings (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    flight_id INT REFERENCES flights(id) ON DELETE CASCADE,
+    seat_id INT REFERENCES seats(id) ON DELETE CASCADE,
+    booking_status VARCHAR(20) CHECK (booking_status IN ('active', 'cancelled')) DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE (flight_id, seat_id)
+);
+
+CREATE TABLE loyalty_program (
+    user_id INT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    points INT DEFAULT 0,
+    level VARCHAR(20) CHECK (level IN ('basic', 'silver', 'gold', 'platinum')) DEFAULT 'basic',
+    discount_percent DECIMAL(5,2) DEFAULT 0.0
+);
+
+CREATE TABLE faq (
+    id SERIAL PRIMARY KEY,
+    question TEXT NOT NULL,
+    answer TEXT NOT NULL
+);
+
+CREATE TABLE visa_info (
+    id SERIAL PRIMARY KEY,
+    country VARCHAR(100),
+    required_documents TEXT
+);
+
+CREATE TABLE payment_methods (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE payments (
+    id SERIAL PRIMARY KEY,
+    booking_id INT REFERENCES bookings(id) ON DELETE CASCADE,
+    payment_method_id INT REFERENCES payment_methods(id),
+    amount DECIMAL(10,2) NOT NULL,
+    payment_time TIMESTAMP DEFAULT NOW(),
+    status VARCHAR(20) CHECK (status IN ('pending', 'completed', 'failed')) DEFAULT 'pending'
+);

@@ -1,0 +1,15 @@
+CREATE VIEW user_profile AS
+SELECT id AS user_id, full_name, email, phone, created_at
+FROM users;
+
+CREATE VIEW booking_history AS
+SELECT 
+    b.id,
+    u.id AS user_id,
+    b.flight_id,
+    s.seat_number,
+    b.booking_status AS status,
+    b.created_at AS booking_date
+FROM bookings b
+JOIN users u ON b.user_id = u.id
+JOIN seats s ON b.seat_id = s.id;

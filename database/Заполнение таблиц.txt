@@ -1,0 +1,73 @@
+INSERT INTO users (email, password_hash, full_name, phone)
+VALUES
+('ivan.petrov@gmail.com', '1111', 'Иван Петров', '+375291112233'),
+('elena.ivanova@mail.ru', '1111', 'Елена Иванова', '+375331234567'),
+('alex.kuznetsov@yandex.by', '1111', 'Александр Кузнецов', '+375447654321'),
+('daria.sidorova@tut.by', '1111', 'Дарья Сидорова', '+375252223344'),
+('sergey.novik@bk.ru', '1111', 'Сергей Новик', '+375297777777');
+
+INSERT INTO loyalty_program (user_id, points, level, discount_percent)
+VALUES
+(1, 0, 'basic', 0.00),
+(2, 1200, 'silver', 5.00),
+(3, 2500, 'gold', 10.00),
+(4, 300, 'basic', 0.00),
+(5, 5000, 'platinum', 15.00);
+
+INSERT INTO flights (flight_number, departure_airport, arrival_airport, departure_time, arrival_time, aircraft_model, status)
+VALUES
+('B2-123', 'Минск', 'Москва', '2025-05-01 08:00', '2025-05-01 09:30', 'Embraer 195', 'scheduled'),
+('B2-456', 'Минск', 'Варшава', '2025-05-02 10:00', '2025-05-02 11:15', 'Boeing 737', 'scheduled'),
+('B2-789', 'Гродно', 'Киев', '2025-05-03 12:00', '2025-05-03 13:30', 'Airbus A320', 'delayed'),
+('B2-101', 'Минск', 'Берлин', '2025-05-04 15:00', '2025-05-04 17:00', 'Boeing 737 MAX', 'cancelled'),
+('B2-202', 'Брест', 'Прага', '2025-05-05 07:00', '2025-05-05 09:00', 'Embraer 190', 'scheduled');
+
+-- По 3 места на каждый рейс
+INSERT INTO seats (flight_id, seat_number) VALUES
+-- рейс 1
+(1, '1A'), (1, '1B'), (1, '1C'),
+-- рейс 2
+(2, '2A'), (2, '2B'), (2, '2C'),
+-- рейс 3
+(3, '3A'), (3, '3B'), (3, '3C'),
+-- рейс 4
+(4, '4A'), (4, '4B'), (4, '4C'),
+-- рейс 5
+(5, '5A'), (5, '5B'), (5, '5C');
+
+-- бронируем 3 места на разные рейсы
+INSERT INTO bookings (user_id, flight_id, seat_id, booking_status)
+VALUES
+(1, 1, 1, 'active'),
+(2, 2, 4, 'active'),
+(3, 3, 7, 'cancelled');
+
+INSERT INTO payment_methods (name)
+VALUES
+('Банковская карта'),
+('Apple Pay'),
+('Google Pay'),
+('PayPal'),
+('ЕРИП');
+
+INSERT INTO payments (booking_id, payment_method_id, amount, status)
+VALUES
+(1, 1, 120.00, 'completed'),
+(2, 3, 95.50, 'completed'),
+(3, 2, 88.00, 'failed');
+
+INSERT INTO faq (question, answer)
+VALUES
+('Как выбрать место в самолете?', 'После выбора рейса вы сможете выбрать место на схеме самолета.'),
+('Как отменить бронь?', 'Зайдите в личный кабинет, выберите бронь и нажмите "Отменить".'),
+('Какие способы оплаты доступны?', 'Мы поддерживаем банковские карты, Apple Pay, Google Pay, PayPal и ЕРИП.'),
+('Можно ли изменить дату вылета?', 'Да, но не позднее чем за 24 часа до вылета.'),
+('Как работает программа лояльности?', 'Вы получаете баллы за покупки. При достижении порога — скидки.');
+
+INSERT INTO visa_info (country, required_documents)
+VALUES
+('Германия', 'Загранпаспорт, медицинская страховка, справка о доходах, приглашение.'),
+('Польша', 'Загранпаспорт, визовая анкета, бронь отеля и билетов, фото 3.5х4.5.'),
+('Чехия', 'Загранпаспорт, финансовые документы, медицинская страховка.'),
+('Россия', 'Паспорт, миграционная карта.'),
+('Украина', 'Паспорт, цель поездки, страховка.');

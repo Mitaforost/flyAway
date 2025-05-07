@@ -1,0 +1,53 @@
+-- Функция бронирования
+CREATE OR REPLACE FUNCTION book_seat(p_user_id INT, p_flight_id INT, p_seat_number VARCHAR)
+RETURNS TEXT AS $$
+DECLARE
+    seat_id INT;
+BEGIN
+    SELECT id INTO seat_id 
+    FROM seats 
+    WHERE flight_id = p_flight_id AND seat_number = p_seat_number AND is_reserved = FALSE;
+
+    IF seat_id IS NULL THEN
+        RETURN 'Место уже забронировано или не существует.';
+    END IF;
+
+    UPDATE seats SET is_reserved = TRUE WHERE id = seat_id;
+
+    INSERT INTO bookings (user_id, flight_id, seat_id)
+    VALUES (p_user_id, p_flight_id, seat_id);
+
+    RETURN 'Бронирование успешно.';
+END;
+$$ LANGUAGE plpgsql;
+
+-- Функция отмены брони
+CREATE OR REPLACE FUNCTION cancel_booking(p_booking_id INT)
+RETURNS TEXT AS $$
+DECLARE
+    seat_id INT;
+BEGIN
+    SELECT seat_id INTO seat_id FROM bookings WHERE id = p_booking_id;
+
+    IF seat_id IS NULL THEN
+        RETURN 'Бронь не найдена.';
+    END IF;
+
+    UPDATE bookings SET booking_status = 'cancelled' WHERE id = p_booking_id;
+    UPDATE seats SET is_reserved = FALSE WHERE id = seat_id;
+
+    RETURN 'Бронь отменена.';
+END;
+$$ LANGUAGE plpgsql;
+
+-- оповещение о задержке рейса
+CREATE OR REPLACE FUNCTION notify_delay()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.status = 'delayed' THEN
+        RAISE NOTICE 'Рейс % задерживается. Уведомление отправлено пользователям.', NEW.flight_number;
+        -- Здесь можно добавить запись в отдельную таблицу уведомлений
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
